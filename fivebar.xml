@@ -1,0 +1,78 @@
+
+<mujoco model="five_bar">
+  <compiler angle="radian"/>
+  <option timestep="0.002" gravity="0 0 -9.81"
+          integrator="implicitfast"/>
+
+  <default>
+    <joint type="hinge" axis="0 1 0" damping="0.05"/>
+    <geom type="capsule" size="0.015"
+          density="1000" contype="0" conaffinity="0"/>
+  </default>
+
+  <worldbody>
+    <light pos="0 0 2" dir="0 0 -1"/>
+    <geom name="floor" type="plane"
+          size="2 2 0.1" rgba="0.8 0.8 0.8 1"/>
+
+    <body name="base" pos="0 0 0.6">
+      <geom fromto="-0.1 0 0 0.1 0 0"
+            size="0.02" rgba="0.3 0.3 0.3 1"/>
+
+      <!-- Left branch -->
+      <body name="left_proximal" pos="-0.1 0 0">
+        <joint name="joint_left_base"/>
+        <geom fromto="0 0 0 0 0 -0.2"
+              rgba="0.2 0.6 0.8 1"/>
+
+        <body name="left_distal" pos="0 0 -0.2">
+          <joint name="joint_left_elbow"/>
+          <geom fromto="0 0 0 0.1 0 -0.2291287847"
+                rgba="0.4 0.8 0.9 1"/>
+          <site name="tip_left"
+                pos="0.1 0 -0.2291287847"
+                size="0.012" rgba="1 0 0 1"/>
+        </body>
+      </body>
+
+      <!-- Right branch -->
+      <body name="right_proximal" pos="0.1 0 0">
+        <joint name="joint_right_base"/>
+        <geom fromto="0 0 0 0 0 -0.2"
+              rgba="0.8 0.4 0.2 1"/>
+
+        <body name="right_distal" pos="0 0 -0.2">
+          <joint name="joint_right_elbow"/>
+          <geom fromto="0 0 0 -0.1 0 -0.2291287847"
+                rgba="0.9 0.6 0.4 1"/>
+          <site name="tip_right"
+                pos="-0.1 0 -0.2291287847"
+                size="0.012" rgba="0 1 0 1"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- Closed-loop constraint -->
+  <equality>
+    <connect name="closure"
+             site1="tip_left"
+             site2="tip_right"
+             solref="0.005 1"/>
+  </equality>
+
+  <!-- Two actuated joints -->
+  <actuator>
+    <motor name="motor_left"
+           joint="joint_left_base"
+           gear="1"
+           ctrllimited="true"
+           ctrlrange="-5 5"/>
+
+    <motor name="motor_right"
+           joint="joint_right_base"
+           gear="1"
+           ctrllimited="true"
+           ctrlrange="-5 5"/>
+  </actuator>
+</mujoco>
